@@ -13,6 +13,9 @@ public class GameLogicScript : MonoBehaviour {
 	public GameObject dictionaryObject;
 	public GameObject finisherPanelObject;
 	public GameObject tutorialPanel;
+	public GameObject oldGuy;
+	public Sprite oldGuyHitSprite;
+	public Sprite oldGuyNormalSprite;
 	public Font useThisFont;
 	int timesInstantiated = 0;
 	int randomPositionX = 0;
@@ -22,6 +25,8 @@ public class GameLogicScript : MonoBehaviour {
 	int insultUsed;
 	bool startingInsult = true;
 	bool finisherPanel = false;
+	bool resetSprite = false;
+	float timer = .5f;
 
 
 	void Start(){
@@ -102,6 +107,16 @@ public class GameLogicScript : MonoBehaviour {
 				finisherPanelObject.GetComponent<Text> ().text = null;
 			}
 		}
+
+		if(resetSprite){
+			if (timer <= 0f) {
+				oldGuy.GetComponent<SpriteRenderer> ().sprite = oldGuyNormalSprite;
+				resetSprite = false;
+			} else if (timer > 0f){
+				timer -= Time.deltaTime;
+				Debug.Log (timer);
+			}
+		}
 	}
 
 	public void FillBar(){
@@ -122,7 +137,7 @@ public class GameLogicScript : MonoBehaviour {
 
 	void ResolveInsult(string responseToInsult){
 		int insultLength = responseToInsult.Length;
-		print (insultLength);
+		//print (insultLength);
 		if (!finisherPanel) {
 			if (responseToInsult.Length >= 3 && responseToInsult.Contains ("a") || responseToInsult.Contains ("o")
 				|| responseToInsult.Contains ("e") || responseToInsult.Contains ("u") || responseToInsult.Contains ("i") 
@@ -130,7 +145,10 @@ public class GameLogicScript : MonoBehaviour {
 				|| responseToInsult.Contains ("E") || responseToInsult.Contains ("U") || responseToInsult.Contains ("I")) {
 				//Debug.Log (responseToInsult);	
 				if(slider.value != 5){
-				InitiateInsult ();
+					InitiateInsult ();
+					timer = .5f;
+					oldGuy.GetComponent<SpriteRenderer> ().sprite = oldGuyHitSprite;
+					resetSprite = true;
 				}
 			}
 		} else {

@@ -19,7 +19,7 @@ public class IntroTextScript : MonoBehaviour {
 		randomStory = Random.Range (0, introStory1.Length);
 		introStory1 = new string[3];
 		introStory1[0] = "Inside of the general store, which you\'ve visited to purchase a bottle of milk and a sack of flour ";
-		introStory1[1] = "During an evening gala, which has been most successful, ";
+		introStory1[1] = "During an afternoon gala, which has been most successful, ";
 		introStory1[2] = "In the Sheriff\'s office, after inquiring about the local littering policy, ";
 
 		introStory2 = new string[3];
