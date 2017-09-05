@@ -6,6 +6,11 @@ public class LoadingScreenScript : MonoBehaviour {
 
 	public int level = 0;
 
+	void Start(){
+		if(level == 3){
+			FindObjectOfType<SoundManagerScript> ().SwitchTunes ();
+		}
+	}
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetKeyDown(KeyCode.Return)){

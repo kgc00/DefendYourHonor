@@ -26,13 +26,15 @@ public class GameLogicScript : MonoBehaviour {
 	bool startingInsult = true;
 	bool finisherPanel = false;
 	bool resetSprite = false;
-	float timer = .5f;
+	float timer = .75f;
+	float typingTimer = .5f;
 
 
 	void Start(){
 		if(insultGameObject.activeInHierarchy==true){
 			insultGameObject.SetActive (false);
 		}
+		FindObjectOfType<SoundManagerScript> ().SwitchTunes();
 		definitionArray = new string[10];
 		definitionArray [0] = "noun: nincompoop\n\na foolish or stupid person.!";
 		definitionArray [1] = "noun: philanderer\n\na man who readily or frequently enters into casual sexual relationships with women; a womanizer.";
@@ -55,7 +57,13 @@ public class GameLogicScript : MonoBehaviour {
 		insultArray [7] = "Fool!";
 		insultArray [8] = "Snake Oil Salesman!";
 		insultArray [9] = "Sophist!";
-		InitiateInsult();
+		StartCoroutine(FirstInsult());
+	}
+
+	IEnumerator FirstInsult()
+	{
+		yield return new WaitForSeconds(.5f);
+		InitiateInsult ();
 	}
 
 	public void InitiateInsult()
@@ -78,6 +86,7 @@ public class GameLogicScript : MonoBehaviour {
 		dictionaryObject.GetComponent<Text> ().text = definitionArray [insultUsed];
 		dictionaryObject.GetComponent<Text> ().font = useThisFont;
 		dictionaryObject.GetComponent<Text> ().fontSize = 24;
+		FindObjectOfType<SoundManagerScript> ().PlayHisInsultSound();
 		FillBar();
 	}
 
@@ -112,9 +121,26 @@ public class GameLogicScript : MonoBehaviour {
 			if (timer <= 0f) {
 				oldGuy.GetComponent<SpriteRenderer> ().sprite = oldGuyNormalSprite;
 				resetSprite = false;
+				InitiateInsult ();
 			} else if (timer > 0f){
 				timer -= Time.deltaTime;
-				Debug.Log (timer);
+			}
+		}
+
+		if (Input.anyKey && !Input.GetKey(KeyCode.Return)) {
+			typingTimer = .5f;
+			FindObjectOfType<SoundManagerScript> ().finishedTyping = false;
+		} else {
+			typingTimer -= Time.deltaTime;
+			FindObjectOfType<SoundManagerScript> ().finishedTyping = false;
+			if(typingTimer <= 0f){
+				FindObjectOfType<SoundManagerScript> ().finishedTyping = true;
+				FindObjectOfType<SoundManagerScript> ().onlyTypeOnce = true;
+				if (FindObjectOfType<SoundManagerScript> ().stopTypingOnce == true){
+					FindObjectOfType<SoundManagerScript> ().StopTyping();
+					FindObjectOfType<SoundManagerScript> ().stopTypingOnce = false;
+				}
+
 			}
 		}
 	}
@@ -145,10 +171,11 @@ public class GameLogicScript : MonoBehaviour {
 				|| responseToInsult.Contains ("E") || responseToInsult.Contains ("U") || responseToInsult.Contains ("I")) {
 				//Debug.Log (responseToInsult);	
 				if(slider.value != 5){
-					InitiateInsult ();
-					timer = .5f;
+//					InitiateInsult ();
+					timer = .75f;
 					oldGuy.GetComponent<SpriteRenderer> ().sprite = oldGuyHitSprite;
 					resetSprite = true;
+					FindObjectOfType<SoundManagerScript> ().PlayOurInsultSound();
 				}
 			}
 		} else {
@@ -157,6 +184,8 @@ public class GameLogicScript : MonoBehaviour {
 				|| responseToInsult.Contains ("A") || responseToInsult.Contains ("O")
 				|| responseToInsult.Contains ("E") || responseToInsult.Contains ("U") || responseToInsult.Contains ("I")) {
 				//Debug.Log (responseToInsult);
+				FindObjectOfType<SoundManagerScript> ().PlayOurInsultSound();
+				FindObjectOfType<SoundManagerScript> ().PlayOurWinSound();
 				Win ();
 			}
 		}
